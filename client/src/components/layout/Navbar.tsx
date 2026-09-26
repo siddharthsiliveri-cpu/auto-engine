@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, ChevronDown, Check, Zap, Menu, X, Database, Layers, Compass, Sliders, Activity, Terminal, Lock } from 'lucide-react';
+import { Shield, ChevronDown, Check, Zap, Menu, X, Database, Layers, Compass, Sliders, Activity, Lock, LogIn } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Magnetic } from '../core/magnetic';
 
@@ -29,7 +29,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
     { id: 'projects', label: 'Projects', icon: Layers },
     { id: 'components', label: 'Components', icon: Zap },
     { id: 'database', label: 'Engineering Hub', icon: Database },
-    { id: 'login', label: 'Vibe Login', icon: Terminal },
   ];
 
   const roles = [
@@ -94,20 +93,19 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
           })}
         </div>
 
-        {/* Right: Persona Switcher, Vibe Login & CTA */}
+        {/* Right: Login, Persona Switcher & CTA */}
         <div className="flex items-center space-x-3">
-          {/* Quick Vibe Login Access Button */}
+          {/* Quick Login Link */}
           <button
             onClick={() => setActiveTab('login')}
-            className={`hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-full font-mono text-xs transition-all ${
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-full font-mono text-xs transition-all ${
               activeTab === 'login'
                 ? 'bg-[#00F0FF] text-black font-bold shadow-lg shadow-[#00F0FF]/30'
-                : 'bg-[#00F0FF]/10 hover:bg-[#00F0FF]/20 border border-[#00F0FF]/30 text-[#00F0FF]'
+                : 'bg-white/5 hover:bg-white/10 border border-white/10 text-neutral-300 hover:text-white'
             }`}
-            title="Open Vibe Coder Terminal Login"
           >
-            <Terminal className="w-3.5 h-3.5" />
-            <span>Vibe Access</span>
+            <Lock className="w-3 h-3 text-[#00F0FF]" />
+            <span>Login</span>
           </button>
 
           {/* Persona Switcher Dropdown */}
@@ -175,8 +173,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
                     }}
                     className="w-full text-center py-1.5 text-[11px] font-mono text-[#00F0FF] hover:underline flex items-center justify-center gap-1"
                   >
-                    <Terminal className="w-3 h-3" />
-                    <span>Open Full Vibe Coder Login Page</span>
+                    <LogIn className="w-3 h-3" />
+                    <span>Open Full Login Page</span>
                   </button>
                 </div>
               </div>
@@ -207,6 +205,16 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
       {isMobileMenuOpen && (
         <div className="lg:hidden fixed inset-x-4 top-20 bg-[#0B0B0B]/95 backdrop-blur-2xl border border-white/10 rounded-2xl p-4 shadow-2xl pointer-events-auto z-50">
           <div className="flex flex-col space-y-2">
+            <button
+              onClick={() => {
+                setActiveTab('login');
+                setIsMobileMenuOpen(false);
+              }}
+              className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium bg-[#00F0FF]/15 text-[#00F0FF] border border-[#00F0FF]/30"
+            >
+              <Lock className="w-4 h-4" />
+              <span>Login / Switch Role</span>
+            </button>
             {navItems.map((item) => {
               const Icon = item.icon;
               return (

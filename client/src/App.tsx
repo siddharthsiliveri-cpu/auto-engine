@@ -14,7 +14,8 @@ import LoginPage from './pages/LoginPage';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<string>('home');
+  // STARTING PAGE: Login Page opens on first launch
+  const [activeTab, setActiveTab] = useState<string>('login');
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -49,6 +50,23 @@ export const App: React.FC = () => {
         {/* Main Content with Smooth Page Transitions */}
         <main className="w-full">
           <AnimatePresence mode="wait">
+            {activeTab === 'login' && (
+              <motion.div
+                key="login"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <LoginPage
+                  onSuccess={(targetTab) => {
+                    setActiveTab(targetTab || 'home');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                />
+              </motion.div>
+            )}
+
             {activeTab === 'home' && (
               <motion.div
                 key="home"
@@ -63,23 +81,6 @@ export const App: React.FC = () => {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
                   onNavigateToComponent={() => setActiveTab('components')}
-                />
-              </motion.div>
-            )}
-
-            {activeTab === 'login' && (
-              <motion.div
-                key="login"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <LoginPage
-                  onSuccess={(targetTab) => {
-                    setActiveTab(targetTab || 'studio');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
                 />
               </motion.div>
             )}
