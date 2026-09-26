@@ -3,6 +3,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import path from 'path';
+import fs from 'fs';
 import authRoutes from './routes/authRoutes';
 import projectRoutes from './routes/projectRoutes';
 import vehicleRoutes from './routes/vehicleRoutes';
@@ -42,7 +44,7 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Mount Routes
+// Mount REST API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/vehicles', vehicleRoutes);
@@ -50,6 +52,16 @@ app.use('/api/components', componentRoutes);
 app.use('/api/configurator', configuratorRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/database', databaseRoutes);
+
+// Static Client Serving (Production & Unified Deployment)
+const clientDistPath = path.resolve(__dirname, '../../client/dist');
+if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) return next();
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+}
 
 // Global Error Handler
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
