@@ -10,6 +10,7 @@ import ProjectsPage from './pages/ProjectsPage';
 import ProjectDetailPage from './pages/ProjectDetailPage';
 import ComponentLibraryPage from './pages/ComponentLibraryPage';
 import DatabaseHubPage from './pages/DatabaseHubPage';
+import LoginPage from './pages/LoginPage';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export const App: React.FC = () => {
@@ -62,6 +63,23 @@ export const App: React.FC = () => {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
                   onNavigateToComponent={() => setActiveTab('components')}
+                />
+              </motion.div>
+            )}
+
+            {activeTab === 'login' && (
+              <motion.div
+                key="login"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <LoginPage
+                  onSuccess={(targetTab) => {
+                    setActiveTab(targetTab || 'studio');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
                 />
               </motion.div>
             )}
