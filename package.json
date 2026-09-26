@@ -1,0 +1,25 @@
+{
+  "name": "autoengine",
+  "version": "1.0.0",
+  "description": "AUTOENGINE - Design the Future of Mobility. Automotive Digital Engineering Platform & 3D Digital Twin",
+  "author": "AUTOENGINE Engineering Team",
+  "license": "MIT",
+  "scripts": {
+    "install:all": "npm install && npm run install:server && npm run install:client",
+    "install:server": "cd server && npm install",
+    "install:client": "cd client && npm install",
+    "setup": "npm run install:all && npm run db:setup",
+    "db:setup": "cd server && npm run db:setup",
+    "db:seed": "cd server && npm run db:seed",
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"cyan,magenta\" \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "build": "npm run build:server && npm run build:client",
+    "build:server": "cd server && npm run build",
+    "build:client": "cd client && npm run build",
+    "start": "cd server && npm start"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
