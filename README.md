@@ -24,7 +24,7 @@
 The database layer is normalized to **Third Normal Form (3NF)** and implemented with **PostgreSQL** and **Prisma ORM**.
 
 ### 1. Relational Entities (19 Tables in 3NF):
-1. **`Role`**: Authorization tiers (`ADMIN`, `PROJECT_MANAGER`, `ENGINEER`, `DESIGNER`).
+1. **`Role`**: Authorization tiers (`ADMIN`, `CUSTOMER`).
 2. **`User`**: Hashed credentials (bcrypt), profiles, and role assignments.
 3. **`AutomotiveProject`**: Vehicle programs (Apex Hyper-GT, Terra SUV, Pulse Sedan), budgets, timelines, and stored-procedure driven completion percentage.
 4. **`ProjectMember`**: M:N relational team junction linking engineers and program managers to vehicle programs.
