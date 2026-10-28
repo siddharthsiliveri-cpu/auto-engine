@@ -1,7 +1,7 @@
 
 # AUTOENGINE — Design the Future of Mobility.
 
-> A Silicon Valley-grade Automotive Digital Engineering Platform and 3D Digital Twin system combining high-end automotive aesthetics with an enterprise relational database satisfying all **BCSE307L Database Systems** requirements.
+> A Silicon Valley-grade Automotive Digital Engineering Platform and 3D Digital Twin system combining high-end automotive.
 
 ---
 
