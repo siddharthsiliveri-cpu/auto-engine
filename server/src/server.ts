@@ -12,6 +12,7 @@ import componentRoutes from './routes/componentRoutes';
 import configuratorRoutes from './routes/configuratorRoutes';
 import reviewRoutes from './routes/reviewRoutes';
 import databaseRoutes from './routes/databaseRoutes';
+import orderRoutes from './routes/orderRoutes';
 
 dotenv.config();
 
@@ -52,6 +53,7 @@ app.use('/api/components', componentRoutes);
 app.use('/api/configurator', configuratorRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/database', databaseRoutes);
+app.use('/api/orders', orderRoutes);
 
 // Static Client Serving (Production & Unified Deployment)
 const clientDistPath = path.resolve(__dirname, '../../client/dist');

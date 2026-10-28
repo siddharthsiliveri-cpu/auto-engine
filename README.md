@@ -108,7 +108,7 @@ AUTOENGINE provides a 1-click test persona switcher in the global header for imm
 
 | Role | Test Persona | Privileges & Responsibilities |
 | :--- | :--- | :--- |
-| **`ADMIN`** | **Elena Vance** (CTO) | Full platform access, database diagnostics, user management, and system overrides. |
+| **`ADMIN`** | **Admin** (Administrator) | Full platform access, database diagnostics, user management, and system overrides. |
 | **`PROJECT_MANAGER`** | **Marcus Thorne** (VP Programs) | Create/manage vehicle programs, milestone scheduling, team assignments, and reviews. |
 | **`ENGINEER`** | **Dr. Sarah Chen** (Lead Powertrain) | Component registry, technical specifications, CAD data, and engineering compliance reviews. |
 | **`DESIGNER`** | **Julian Rossi** (Head of CMF) | 3D studio configurations, exterior coatings, wheel styling, and aesthetic specifications. |

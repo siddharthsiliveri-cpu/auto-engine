@@ -22,6 +22,9 @@ export const getDatabaseOverview = async (req: Request, res: Response): Promise<
       milestonesCount,
       reviewsCount,
       auditLogsCount,
+      ordersCount,
+      orderItemsCount,
+      restomodCount,
     ] = await Promise.all([
       prisma.role.count(),
       prisma.user.count(),
@@ -41,11 +44,14 @@ export const getDatabaseOverview = async (req: Request, res: Response): Promise<
       prisma.projectMilestone.count(),
       prisma.engineeringReview.count(),
       prisma.auditLog.count(),
+      prisma.order.count(),
+      prisma.orderItem.count(),
+      prisma.restomodVehicle.count(),
     ]);
 
     const tables = [
       { name: 'Role', rows: rolesCount, primaryKey: 'id', relations: ['User (1:N)'], normalForm: '3NF Compliant (Atomic, PK-dependent, no transitive attributes)' },
-      { name: 'User', rows: usersCount, primaryKey: 'id', relations: ['Role (N:1)', 'ProjectMember (1:N)', 'VehicleConfiguration (1:N)', 'EngineeringReview (1:N)', 'AuditLog (1:N)'], normalForm: '3NF Compliant' },
+      { name: 'User', rows: usersCount, primaryKey: 'id', relations: ['Role (N:1)', 'ProjectMember (1:N)', 'VehicleConfiguration (1:N)', 'EngineeringReview (1:N)', 'AuditLog (1:N)', 'Order (1:N)'], normalForm: '3NF Compliant' },
       { name: 'AutomotiveProject', rows: projectsCount, primaryKey: 'id', relations: ['VehicleModel (1:N)', 'ProjectMember (1:N)', 'ProjectMilestone (1:N)', 'EngineeringReview (1:N)'], normalForm: '3NF Compliant' },
       { name: 'ProjectMember', rows: projectMembersCount, primaryKey: 'id', relations: ['AutomotiveProject (N:1)', 'User (N:1)'], normalForm: '3NF Compliant (Junction entity)' },
       { name: 'VehicleModel', rows: modelsCount, primaryKey: 'id', relations: ['AutomotiveProject (N:1)', 'VehicleVariant (1:N)'], normalForm: '3NF Compliant' },
@@ -62,6 +68,9 @@ export const getDatabaseOverview = async (req: Request, res: Response): Promise<
       { name: 'ProjectMilestone', rows: milestonesCount, primaryKey: 'id', relations: ['AutomotiveProject (N:1)'], normalForm: '3NF Compliant' },
       { name: 'EngineeringReview', rows: reviewsCount, primaryKey: 'id', relations: ['AutomotiveProject (N:1)', 'User (N:1)'], normalForm: '3NF Compliant' },
       { name: 'AuditLog', rows: auditLogsCount, primaryKey: 'id', relations: ['User (N:1)'], normalForm: '3NF Compliant (Immutable telemetry ledger)' },
+      { name: 'Order', rows: ordersCount, primaryKey: 'id', relations: ['User (N:1)', 'OrderItem (1:N)'], normalForm: '3NF Compliant' },
+      { name: 'OrderItem', rows: orderItemsCount, primaryKey: 'id', relations: ['Order (N:1)'], normalForm: '3NF Compliant (Order itemized lines)' },
+      { name: 'RestomodVehicle', rows: restomodCount, primaryKey: 'id', relations: ['Bespoke Custom Restomod Master Spec (Ringbrothers KINGPIN 1969 Mustang)'], normalForm: '3NF Compliant' },
     ];
 
     res.json({

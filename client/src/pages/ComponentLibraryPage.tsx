@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { Component, ComponentCategory, Supplier } from '../types';
-import { Search, Filter, Cpu, Shield, Plus, X, Layers, CheckCircle2, AlertCircle, ArrowUpRight } from 'lucide-react';
+import { Search, Filter, Cpu, Shield, Plus, X, Layers, CheckCircle2, AlertCircle, ArrowUpRight, ShoppingBag } from 'lucide-react';
 import AutomotiveCanvas from '../components/3d/AutomotiveCanvas';
 import { VehicleCustomization } from '../components/3d/VehicleModel3D';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import { Magnetic } from '@/components/core/magnetic';
 
 export const ComponentLibraryPage: React.FC = () => {
   const { user } = useAuth();
+  const { addToCart, setIsCartOpen } = useCart();
   const [components, setComponents] = useState<Component[]>([]);
   const [categories, setCategories] = useState<ComponentCategory[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
@@ -289,6 +291,39 @@ export const ComponentLibraryPage: React.FC = () => {
                       </div>
                     ))}
                   </div>
+                </div>
+
+                {/* Add to Cart Action */}
+                <div className="pt-2">
+                  <button
+                    onClick={() => {
+                      if (!user) {
+                        alert('Authentication Required: Please sign in or register to add components to your engineering cart and place orders.');
+                        return;
+                      }
+                      addToCart({
+                        type: 'component',
+                        vehicleModelName: selectedComponent.name,
+                        basePrice: selectedComponent.costUsd,
+                        totalPrice: selectedComponent.costUsd,
+                        quantity: 1,
+                        modifications: [
+                          {
+                            category: selectedComponent.category?.name || 'Automotive Component',
+                            name: selectedComponent.name,
+                            spec: `Part #${selectedComponent.partNumber} • ${selectedComponent.weightKg} kg`,
+                            cost: selectedComponent.costUsd,
+                          },
+                        ],
+                      });
+                      setIsCartOpen(true);
+                      setSelectedComponent(null);
+                    }}
+                    className="w-full py-3 rounded-2xl bg-[#00F0FF] text-black hover:bg-white font-bold text-xs uppercase transition-all shadow-lg shadow-[#00F0FF]/25 flex items-center justify-center space-x-2"
+                  >
+                    <ShoppingBag className="w-4 h-4" />
+                    <span>Add Component to Cart (${selectedComponent.costUsd.toLocaleString()})</span>
+                  </button>
                 </div>
               </div>
             </div>

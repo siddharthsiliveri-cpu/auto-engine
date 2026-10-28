@@ -1,10 +1,10 @@
-import React, { useRef, useState, useEffect, Suspense } from 'react';
+import React, { useState, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
 import VehicleModel3D, { VehicleCustomization } from './VehicleModel3D';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { ArrowDown, Cpu, Activity, Shield, Zap } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ChevronLeft, ChevronRight, Cpu, Activity, Shield, Zap } from 'lucide-react';
 
 interface CameraRigProps {
   stage: number;
@@ -55,30 +55,10 @@ const CameraRig: React.FC<CameraRigProps> = ({ stage, stageProgress }) => {
 };
 
 export const ScrollScene3D: React.FC = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
   const [activeStage, setActiveStage] = useState(1);
-  const [stageProgress, setStageProgress] = useState(0);
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start start', 'end end'],
-  });
-
-  useEffect(() => {
-    return scrollYProgress.onChange((v) => {
-      // 6 stages mapped to progress range 0.0 to 1.0
-      // 0.00 - 0.16 -> Stage 1
-      // 0.16 - 0.33 -> Stage 2
-      // 0.33 - 0.50 -> Stage 3
-      // 0.50 - 0.67 -> Stage 4
-      // 0.67 - 0.84 -> Stage 5
-      // 0.84 - 1.00 -> Stage 6
-      const stageIndex = Math.min(Math.floor(v * 6) + 1, 6);
-      setActiveStage(stageIndex);
-      const subProg = (v * 6) % 1;
-      setStageProgress(subProg);
-    });
-  }, [scrollYProgress]);
+  const handlePrev = () => setActiveStage((prev) => (prev > 1 ? prev - 1 : 6));
+  const handleNext = () => setActiveStage((prev) => (prev < 6 ? prev + 1 : 1));
 
   // Dynamic customization state derived from scroll stage
   const customization: VehicleCustomization = {
@@ -151,139 +131,149 @@ export const ScrollScene3D: React.FC = () => {
   const currentStageData = stages[activeStage - 1] || stages[0];
 
   return (
-    <div ref={containerRef} className="relative w-full bg-[#050505]">
-      {/* ======================================================== */}
-      {/* PINNED VIEWPORT: Fixed 3D Canvas while content scrolls   */}
-      {/* ======================================================== */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center">
-        {/* Ambient background glows */}
-        <div className="absolute inset-0 technical-grid opacity-15 pointer-events-none" />
-        <div className="absolute inset-0 radial-vignette pointer-events-none" />
-        <div className="absolute top-1/4 -left-40 w-96 h-96 bg-[#00F0FF]/10 rounded-full blur-[140px] pointer-events-none" />
-        <div className="absolute bottom-1/4 -right-40 w-96 h-96 bg-[#0070F3]/10 rounded-full blur-[140px] pointer-events-none" />
+    <div className="relative w-full h-[90vh] md:h-screen bg-[#050505] overflow-hidden flex items-center justify-center border-t border-white/10">
+      {/* Ambient background glows */}
+      <div className="absolute inset-0 technical-grid opacity-15 pointer-events-none" />
+      <div className="absolute inset-0 radial-vignette pointer-events-none" />
+      <div className="absolute top-1/4 -left-40 w-96 h-96 bg-[#00F0FF]/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-1/4 -right-40 w-96 h-96 bg-[#0070F3]/10 rounded-full blur-[140px] pointer-events-none" />
 
-        {/* 3D WebGL Canvas */}
-        <div className="absolute inset-0 z-10">
-          <Canvas
-            shadows
-            camera={{ position: [3.8, 1.8, 4.8], fov: 42 }}
-            gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
-          >
-            <ambientLight intensity={0.6} />
-            <directionalLight position={[6, 8, 5]} intensity={1.8} castShadow />
-            <directionalLight position={[-6, 5, -5]} intensity={0.8} color="#00F0FF" />
-            <pointLight position={[0, -0.4, 0]} intensity={2.5} color="#00F0FF" distance={4} />
+      {/* 3D WebGL Canvas */}
+      <div className="absolute inset-0 z-10">
+        <Canvas
+          shadows
+          camera={{ position: [3.8, 1.8, 4.8], fov: 42 }}
+          gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+        >
+          <ambientLight intensity={0.6} />
+          <directionalLight position={[6, 8, 5]} intensity={1.8} castShadow />
+          <directionalLight position={[-6, 5, -5]} intensity={0.8} color="#00F0FF" />
+          <pointLight position={[0, -0.4, 0]} intensity={2.5} color="#00F0FF" distance={4} />
 
-            <CameraRig stage={activeStage} stageProgress={stageProgress} />
+          <CameraRig stage={activeStage} stageProgress={0} />
 
-            <Suspense fallback={null}>
-              <VehicleModel3D
-                customization={customization}
-                autoRotate={false}
-              />
-              <ContactShadows
-                position={[0, -0.22, 0]}
-                opacity={0.8}
-                scale={10}
-                blur={1.8}
-                far={4}
-                color="#000000"
-              />
-            </Suspense>
-          </Canvas>
-        </div>
-
-        {/* Cinematic HUD Overlay for Active Stage */}
-        <div className="absolute inset-0 z-20 pointer-events-none flex flex-col justify-between p-8 md:p-16 max-w-7xl mx-auto">
-          {/* Top Stage Indicator */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <span className="w-2 h-2 rounded-full bg-[#00F0FF] animate-pulse" />
-              <span className="font-mono text-xs tracking-widest text-[#00F0FF] uppercase">
-                {currentStageData.tag}
-              </span>
-            </div>
-
-            {/* Stage Counter Dots */}
-            <div className="flex items-center space-x-2">
-              {[1, 2, 3, 4, 5, 6].map((st) => (
-                <div
-                  key={st}
-                  className={`transition-all duration-300 rounded-full ${
-                    st === activeStage
-                      ? 'w-6 h-1.5 bg-[#00F0FF]'
-                      : 'w-1.5 h-1.5 bg-white/20'
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Bottom Narrative Card */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
-            <div className="lg:col-span-8 space-y-3">
-              <motion.h2
-                key={`title-${activeStage}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="text-3xl md:text-5xl lg:text-6xl font-display font-extrabold tracking-tight text-white leading-none"
-              >
-                {currentStageData.title}
-              </motion.h2>
-
-              <motion.p
-                key={`sub-${activeStage}`}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                className="text-base md:text-lg text-neutral-300 font-light"
-              >
-                {currentStageData.subtitle}
-              </motion.p>
-
-              <motion.p
-                key={`desc-${activeStage}`}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-xs md:text-sm text-neutral-400 max-w-xl leading-relaxed"
-              >
-                {currentStageData.desc}
-              </motion.p>
-            </div>
-
-            {/* Telemetry Badge */}
-            <div className="lg:col-span-4 flex lg:justify-end">
-              <motion.div
-                key={`stat-${activeStage}`}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4 }}
-                className="glass-panel border border-[#00F0FF]/30 px-6 py-4 rounded-2xl glow-cyan text-left"
-              >
-                <div className="text-[10px] font-mono tracking-widest text-[#00F0FF] uppercase mb-1">
-                  {currentStageData.statLabel}
-                </div>
-                <div className="text-2xl md:text-3xl font-display font-extrabold text-white tracking-tight">
-                  {currentStageData.statValue}
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </div>
+          <Suspense fallback={null}>
+            <VehicleModel3D
+              customization={customization}
+              autoRotate={false}
+            />
+            <ContactShadows
+              position={[0, -0.22, 0]}
+              opacity={0.8}
+              scale={10}
+              blur={1.8}
+              far={4}
+              color="#000000"
+            />
+          </Suspense>
+        </Canvas>
       </div>
 
-      {/* ======================================================== */}
-      {/* SCROLL TRACK: Invisible spacers that drive scroll steps  */}
-      {/* ======================================================== */}
-      <div className="relative z-0 pointer-events-none">
-        <div className="h-screen" />
-        <div className="h-screen" />
-        <div className="h-screen" />
-        <div className="h-screen" />
-        <div className="h-screen" />
-        <div className="h-screen" />
+      {/* Cinematic HUD Overlay for Active Stage */}
+      <div className="absolute inset-0 z-20 pointer-events-none flex flex-col justify-between p-6 md:p-12 max-w-7xl mx-auto">
+        {/* Top Stage Indicator & Interactive Dots */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <span className="w-2 h-2 rounded-full bg-[#00F0FF] animate-pulse" />
+            <span className="font-mono text-xs tracking-widest text-[#00F0FF] uppercase">
+              {currentStageData.tag}
+            </span>
+          </div>
+
+          {/* Interactive Stage Buttons */}
+          <div className="flex items-center space-x-2 pointer-events-auto">
+            <button
+              onClick={handlePrev}
+              className="p-1.5 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 text-white transition-all mr-1"
+              aria-label="Previous stage"
+            >
+              <ChevronLeft className="w-3.5 h-3.5 text-[#00F0FF]" />
+            </button>
+            {[1, 2, 3, 4, 5, 6].map((st) => (
+              <button
+                key={st}
+                onClick={() => setActiveStage(st)}
+                className={`transition-all duration-300 rounded-full cursor-pointer h-2 ${
+                  st === activeStage
+                    ? 'w-8 bg-[#00F0FF]'
+                    : 'w-2 bg-white/20 hover:bg-white/50'
+                }`}
+                aria-label={`Go to Stage ${st}`}
+              />
+            ))}
+            <button
+              onClick={handleNext}
+              className="p-1.5 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 text-white transition-all ml-1"
+              aria-label="Next stage"
+            >
+              <ChevronRight className="w-3.5 h-3.5 text-[#00F0FF]" />
+            </button>
+          </div>
+        </div>
+
+        {/* Bottom Narrative Card */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end pointer-events-auto">
+          <div className="lg:col-span-8 space-y-3">
+            <motion.h2
+              key={`title-${activeStage}`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-3xl md:text-5xl lg:text-6xl font-display font-extrabold tracking-tight text-white leading-none"
+            >
+              {currentStageData.title}
+            </motion.h2>
+
+            <motion.p
+              key={`sub-${activeStage}`}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-base md:text-lg text-neutral-300 font-light"
+            >
+              {currentStageData.subtitle}
+            </motion.p>
+
+            <motion.p
+              key={`desc-${activeStage}`}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-xs md:text-sm text-neutral-400 max-w-xl leading-relaxed"
+            >
+              {currentStageData.desc}
+            </motion.p>
+
+            {/* Quick Next Stage Pill */}
+            <div className="pt-2 flex items-center space-x-3">
+              <button
+                onClick={handleNext}
+                className="text-xs font-mono text-[#00F0FF] hover:text-white transition-colors inline-flex items-center gap-1.5 underline decoration-[#00F0FF]/40 cursor-pointer"
+              >
+                <span>Explore Next Phase ({activeStage < 6 ? `0${activeStage + 1}` : '01'})</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Telemetry Badge */}
+          <div className="lg:col-span-4 flex lg:justify-end">
+            <motion.div
+              key={`stat-${activeStage}`}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4 }}
+              className="glass-panel border border-[#00F0FF]/30 px-6 py-4 rounded-2xl glow-cyan text-left"
+            >
+              <div className="text-[10px] font-mono tracking-widest text-[#00F0FF] uppercase mb-1">
+                {currentStageData.statLabel}
+              </div>
+              <div className="text-2xl md:text-3xl font-display font-extrabold text-white tracking-tight">
+                {currentStageData.statValue}
+              </div>
+            </motion.div>
+          </div>
+        </div>
       </div>
     </div>
   );

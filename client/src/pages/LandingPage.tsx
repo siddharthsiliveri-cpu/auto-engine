@@ -8,7 +8,6 @@ import {
   ArrowRight,
   ArrowDown,
   Layers,
-  Zap,
   Sliders,
   Database,
   Cpu,
@@ -18,6 +17,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { useAuth } from '../context/AuthContext';
 
 interface LandingPageProps {
   onNavigateToTab: (tab: string) => void;
@@ -25,6 +25,7 @@ interface LandingPageProps {
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToTab, onNavigateToComponent }) => {
+  const { user } = useAuth();
   const horizontalSectionRef = useRef<HTMLDivElement>(null);
 
   // Horizontal scroll transform for engineering phases
@@ -187,7 +188,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToTab, onNav
       {/* ======================================================== */}
       {/* 3. CINEMATIC TEXT REVEAL SECTION                         */}
       {/* ======================================================== */}
-      <section className="py-32 px-6 max-w-6xl mx-auto text-center space-y-6">
+      <section className="py-14 px-6 max-w-5xl mx-auto text-center space-y-4">
         <span className="text-xs font-mono tracking-widest text-[#00F0FF] uppercase">
           AUTOMOTIVE SYSTEMS PHILOSOPHY
         </span>
@@ -204,7 +205,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToTab, onNav
       {/* ======================================================== */}
       {/* 4. EXPLODED VEHICLE VIEW ENGINEERING MODE                */}
       {/* ======================================================== */}
-      <section className="py-16 px-4 md:px-12 max-w-[1700px] mx-auto space-y-8">
+      <section className="pt-4 pb-16 px-4 md:px-12 max-w-[1700px] mx-auto space-y-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-white/10 pb-6 gap-4">
           <div>
             <div className="flex items-center space-x-2 text-xs font-mono text-[#00F0FF] uppercase tracking-widest mb-1">
@@ -269,12 +270,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToTab, onNav
       {/* ======================================================== */}
       {/* 6. CALL TO ACTION & RELATIONAL ENTERPRISE FOOTER         */}
       {/* ======================================================== */}
-      <section className="py-24 px-6 max-w-6xl mx-auto text-center space-y-8 border-t border-white/10">
-        <h2 className="text-4xl md:text-6xl font-display font-extrabold text-white tracking-tight">
+      <section className="py-14 px-6 max-w-5xl mx-auto text-center space-y-6 border-t border-white/10">
+        <h2 className="text-4xl md:text-5xl font-display font-extrabold text-white tracking-tight">
           READY TO DESIGN THE FUTURE?
         </h2>
         <p className="text-neutral-400 max-w-xl mx-auto text-sm">
-          Enter the high-precision vehicle configurator, run database queries, or inspect digital twin telemetries.
+          Enter the high-precision vehicle configurator, customize bespoke automotive specifications, or inspect real-time digital twins.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-4">
@@ -288,24 +289,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToTab, onNav
             </button>
           </Magnetic>
 
-          <Magnetic intensity={0.3} range={80}>
-            <button
-              onClick={() => onNavigateToTab('database')}
-              className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase px-8 py-4 rounded-full border border-white/10 transition-all flex items-center space-x-2"
-            >
-              <Database className="w-4 h-4 text-[#00F0FF]" />
-              <span>BCSE307L Database Hub</span>
-            </button>
-          </Magnetic>
+          {/* Database Hub is strictly exclusive to ADMIN and completely removed for Client & Guest */}
+          {user?.role === 'ADMIN' && (
+            <Magnetic intensity={0.3} range={80}>
+              <button
+                onClick={() => onNavigateToTab('database')}
+                className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase px-8 py-4 rounded-full border border-white/10 transition-all flex items-center space-x-2"
+              >
+                <Database className="w-4 h-4 text-[#00F0FF]" />
+                <span>BCSE307L Database Hub</span>
+              </button>
+            </Magnetic>
+          )}
         </div>
       </section>
 
       {/* Global Minimal Footer */}
-      <footer className="border-t border-white/10 py-10 px-8 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between text-xs font-mono text-neutral-500 gap-4">
+      <footer className="border-t border-white/10 py-8 px-8 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between text-xs font-mono text-neutral-500 gap-4">
         <div className="flex items-center space-x-3">
           <span className="text-white font-bold tracking-widest">AUTOENGINE</span>
           <span>•</span>
-          <span>BCSE307L DATABASE SYSTEMS PROJECT</span>
+          <span>{user?.role === 'ADMIN' ? 'BCSE307L DATABASE SYSTEMS ARCHITECTURE' : 'AUTOMOTIVE DIGITAL ENGINEERING PLATFORM'}</span>
         </div>
         <div>
           <span>POSTGRESQL • PRISMA 3NF • THREE.JS • REACT THREE FIBER • GSAP</span>

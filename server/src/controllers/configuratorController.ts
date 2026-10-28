@@ -174,3 +174,76 @@ export const getConfigurationById = async (req: Request, res: Response): Promise
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const deleteConfiguration = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const id = String(req.params.id);
+    const existing = await prisma.vehicleConfiguration.findUnique({ where: { id } });
+    if (!existing) {
+      res.status(404).json({ success: false, message: 'Configuration not found' });
+      return;
+    }
+
+    await prisma.vehicleConfiguration.delete({ where: { id } });
+    res.json({ success: true, message: 'Configuration deleted successfully from database' });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const duplicateConfiguration = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const id = String(req.params.id);
+    const source = await prisma.vehicleConfiguration.findUnique({
+      where: { id },
+      include: { components: true },
+    });
+
+    if (!source) {
+      res.status(404).json({ success: false, message: 'Source configuration not found' });
+      return;
+    }
+
+    const newCode = `CFG-${Date.now().toString(36).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
+    const duplicate = await prisma.$transaction(async (tx) => {
+      const copy = await tx.vehicleConfiguration.create({
+        data: {
+          variantId: source.variantId,
+          userId: source.userId,
+          configCode: newCode,
+          name: `${source.name} (Copy)`,
+          totalPrice: source.totalPrice,
+          totalWeight: source.totalWeight,
+          calculatedRange: source.calculatedRange,
+          status: 'SAVED',
+        },
+      });
+
+      for (const comp of source.components) {
+        await tx.configurationComponent.create({
+          data: {
+            configurationId: copy.id,
+            componentId: comp.componentId,
+            colorOverride: comp.colorOverride,
+            customNotes: comp.customNotes,
+          },
+        });
+      }
+
+      return copy;
+    });
+
+    const fullDuplicate = await prisma.vehicleConfiguration.findUnique({
+      where: { id: duplicate.id },
+      include: {
+        variant: { include: { model: true, specifications: true } },
+        components: { include: { component: { include: { category: true } } } },
+      },
+    });
+
+    res.status(201).json({ success: true, message: 'Configuration duplicated successfully', data: fullDuplicate });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+

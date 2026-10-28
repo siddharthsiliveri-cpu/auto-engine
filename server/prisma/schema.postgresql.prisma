@@ -310,3 +310,99 @@ model AuditLog {
   @@index([recordId])
   @@index([createdAt])
 }
+
+model Order {
+  id                String      @id @default(uuid())
+  orderNumber       String      @unique
+  userId            String?
+  customerName      String
+  customerEmail     String
+  customerPhone     String?
+  deliveryAddress   String
+  deliveryMethod    String      @default("WHITE_GLOVE")
+  paymentMethod     String      @default("WIRE_TRANSFER")
+  totalAmount       Float
+  status            String      @default("CONFIRMED")
+  vin               String?
+  estimatedDelivery DateTime?
+  notes             String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  user              User?       @relation(fields: [userId], references: [id])
+  items             OrderItem[]
+
+  @@index([orderNumber])
+  @@index([userId])
+  @@index([status])
+}
+
+model OrderItem {
+  id                String   @id @default(uuid())
+  orderId           String
+  itemType          String   @default("VEHICLE")
+  vehicleName       String
+  variantName       String?
+  configCode        String?
+  basePrice         Float
+  totalPrice        Float
+  modificationsJson String?
+  paintColor        String?
+  paintFinish       String?
+  wheelStyle        String?
+  tyreStyle         String?
+  spoilerStyle      String?
+  caliperColor      String?
+  interiorTrim      String?
+  exhaustStyle      String?
+  quantity          Int      @default(1)
+  order             Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+}
+
+model RestomodVehicle {
+  id                    String   @id @default(uuid())
+  buildName             String   @unique
+  codename              String   @unique
+  donorMake             String   @default("Ford")
+  donorModel            String   @default("Mustang Mach 1")
+  donorYear             Int      @default(1969)
+  builder               String   @default("Ringbrothers")
+  leadBuilders          String   @default("Jim Ring & Mike Ring")
+  buildHours            Int      @default(5500)
+  unveiledAt            String   @default("SEMA Show")
+  engine                String
+  supercharger          String
+  horsepower            Int
+  torqueNm              Int
+  transmission          String
+  chassis               String
+  suspension            String
+  dampers               String
+  brakesFront           String
+  brakesRear            String
+  caliperColor          String   @default("Quantum Cyan")
+  wheelsFront           String
+  wheelsRear            String
+  tiresFront            String
+  tiresRear             String
+  exhaust               String
+  bodyWideningFrontIn   Float    @default(2.0)
+  bodyWideningRearIn    Float    @default(3.5)
+  wheelbaseStretchIn    Float    @default(1.5)
+  carbonFiberParts      String
+  paintName             String   @default("Bootleg Black")
+  paintCode             String   @default("BASF Glasurit GM 8555")
+  curbWeightKg          Float
+  acceleration0100      Float
+  topSpeedKmh           Int
+  estimatedValueUsd     Float
+  imagePath             String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([buildName])
+  @@index([donorYear])
+  @@index([builder])
+}
+

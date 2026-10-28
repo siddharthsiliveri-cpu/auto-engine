@@ -23,11 +23,43 @@ const getHeaders = () => {
 export const api = {
   // Auth
   auth: {
-    login: async (email: string, password: string) => {
+    login: async (email: string, password: string, rememberMe: boolean = false) => {
       const res = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, rememberMe }),
+      });
+      return res.json();
+    },
+    register: async (userData: {
+      email: string;
+      password: string;
+      firstName: string;
+      lastName: string;
+      fullName?: string;
+      roleName?: string;
+      rememberMe?: boolean;
+    }) => {
+      const res = await fetch(`${API_BASE}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+      return res.json();
+    },
+    forgotPassword: async (email: string) => {
+      const res = await fetch(`${API_BASE}/auth/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      return res.json();
+    },
+    resetPassword: async (token: string, newPassword: string) => {
+      const res = await fetch(`${API_BASE}/auth/reset-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, newPassword }),
       });
       return res.json();
     },
@@ -138,6 +170,20 @@ export const api = {
       const res = await fetch(`${API_BASE}/configurator/${id}`, { headers: getHeaders() });
       return res.json();
     },
+    delete: async (id: string): Promise<{ success: boolean; message: string }> => {
+      const res = await fetch(`${API_BASE}/configurator/${id}`, {
+        method: 'DELETE',
+        headers: getHeaders(),
+      });
+      return res.json();
+    },
+    duplicate: async (id: string): Promise<{ success: boolean; data: VehicleConfiguration }> => {
+      const res = await fetch(`${API_BASE}/configurator/${id}/duplicate`, {
+        method: 'POST',
+        headers: getHeaders(),
+      });
+      return res.json();
+    },
   },
 
   // Engineering Reviews
@@ -188,6 +234,38 @@ export const api = {
     },
     getAuditLogs: async () => {
       const res = await fetch(`${API_BASE}/database/audit-logs`, { headers: getHeaders() });
+      return res.json();
+    },
+  },
+
+  // Orders & Purchasing
+  orders: {
+    create: async (orderData: any) => {
+      const res = await fetch(`${API_BASE}/orders`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(orderData),
+      });
+      return res.json();
+    },
+    getAll: async () => {
+      const res = await fetch(`${API_BASE}/orders`, { headers: getHeaders() });
+      return res.json();
+    },
+    getById: async (id: string) => {
+      const res = await fetch(`${API_BASE}/orders/${id}`, { headers: getHeaders() });
+      return res.json();
+    },
+    track: async (query: string) => {
+      const res = await fetch(`${API_BASE}/orders/track?q=${encodeURIComponent(query)}`, { headers: getHeaders() });
+      return res.json();
+    },
+    updateStatus: async (id: string, data: { status?: string; estimatedDelivery?: string; notes?: string }) => {
+      const res = await fetch(`${API_BASE}/orders/${id}/status`, {
+        method: 'PATCH',
+        headers: getHeaders(),
+        body: JSON.stringify(data),
+      });
       return res.json();
     },
   },

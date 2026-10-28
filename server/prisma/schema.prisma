@@ -30,6 +30,7 @@ model User {
   configurations VehicleConfiguration[]
   reviews        EngineeringReview[]
   auditLogs      AuditLog[]
+  orders         Order[]
 
   @@index([email])
   @@index([roleId])
@@ -71,19 +72,23 @@ model ProjectMember {
 }
 
 model VehicleModel {
-  id          String            @id @default(uuid())
-  projectId   String
-  modelCode   String            @unique
-  name        String
-  segment     String
-  year        Int
-  description String
-  createdAt   DateTime          @default(now())
-  project     AutomotiveProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  variants    VehicleVariant[]
+  id           String            @id @default(uuid())
+  projectId    String
+  modelCode    String            @unique
+  name         String
+  manufacturer String            @default("AUTOENGINE")
+  category     String            @default("Supercar")
+  imagePath    String?
+  segment      String
+  year         Int
+  description  String
+  createdAt    DateTime          @default(now())
+  project      AutomotiveProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  variants     VehicleVariant[]
 
   @@index([projectId])
   @@index([modelCode])
+  @@index([manufacturer])
 }
 
 model VehicleVariant {
@@ -153,6 +158,8 @@ model Component {
   name           String
   description    String
   manufacturer   String
+  material       String?
+  dimensions     String?
   weightKg       Float
   costUsd        Float
   status         String                   @default("APPROVED")
@@ -196,16 +203,17 @@ model ComponentSpecification {
 }
 
 model VariantComponent {
-  id              String         @id @default(uuid())
-  variantId       String
-  componentId     String
-  isStandard      Boolean        @default(true)
-  isOptional      Boolean        @default(false)
-  positionOffsetX Float          @default(0)
-  positionOffsetY Float          @default(0)
-  positionOffsetZ Float          @default(0)
-  variant         VehicleVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
-  component       Component      @relation(fields: [componentId], references: [id], onDelete: Cascade)
+  id                  String         @id @default(uuid())
+  variantId           String
+  componentId         String
+  compatibilityStatus String         @default("COMPATIBLE")
+  isStandard          Boolean        @default(true)
+  isOptional          Boolean        @default(false)
+  positionOffsetX     Float          @default(0)
+  positionOffsetY     Float          @default(0)
+  positionOffsetZ     Float          @default(0)
+  variant             VehicleVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  component           Component      @relation(fields: [componentId], references: [id], onDelete: Cascade)
 
   @@unique([variantId, componentId])
   @@index([variantId])
@@ -216,6 +224,8 @@ model ThreeDModel {
   id               String         @id @default(uuid())
   variantId        String
   meshName         String
+  filePath         String?
+  version          String         @default("1.0.0")
   fileFormat       String         @default("GLTF/Procedural")
   verticesCount    Int
   lodLevels        Int            @default(3)
@@ -236,6 +246,7 @@ model VehicleConfiguration {
   totalWeight     Float
   calculatedRange Int
   status          String                   @default("SAVED")
+  savedDate       DateTime                 @default(now())
   createdAt       DateTime                 @default(now())
   updatedAt       DateTime                 @updatedAt
   variant         VehicleVariant           @relation(fields: [variantId], references: [id], onDelete: Cascade)
@@ -251,6 +262,8 @@ model ConfigurationComponent {
   id              String               @id @default(uuid())
   configurationId String
   componentId     String
+  quantity        Int                  @default(1)
+  selectedOptions String?
   colorOverride   String?
   customNotes     String?
   configuration   VehicleConfiguration @relation(fields: [configurationId], references: [id], onDelete: Cascade)
@@ -310,3 +323,99 @@ model AuditLog {
   @@index([recordId])
   @@index([createdAt])
 }
+
+model Order {
+  id                String      @id @default(uuid())
+  orderNumber       String      @unique
+  userId            String?
+  customerName      String
+  customerEmail     String
+  customerPhone     String?
+  deliveryAddress   String
+  deliveryMethod    String      @default("WHITE_GLOVE")
+  paymentMethod     String      @default("WIRE_TRANSFER")
+  totalAmount       Float
+  status            String      @default("CONFIRMED")
+  vin               String?
+  estimatedDelivery DateTime?
+  notes             String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  user              User?       @relation(fields: [userId], references: [id])
+  items             OrderItem[]
+
+  @@index([orderNumber])
+  @@index([userId])
+  @@index([status])
+}
+
+model OrderItem {
+  id                String   @id @default(uuid())
+  orderId           String
+  itemType          String   @default("VEHICLE")
+  vehicleName       String
+  variantName       String?
+  configCode        String?
+  basePrice         Float
+  totalPrice        Float
+  modificationsJson String?
+  paintColor        String?
+  paintFinish       String?
+  wheelStyle        String?
+  tyreStyle         String?
+  spoilerStyle      String?
+  caliperColor      String?
+  interiorTrim      String?
+  exhaustStyle      String?
+  quantity          Int      @default(1)
+  order             Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+}
+
+model RestomodVehicle {
+  id                    String   @id @default(uuid())
+  buildName             String   @unique
+  codename              String   @unique
+  donorMake             String   @default("Ford")
+  donorModel            String   @default("Mustang Mach 1")
+  donorYear             Int      @default(1969)
+  builder               String   @default("Ringbrothers")
+  leadBuilders          String   @default("Jim Ring & Mike Ring")
+  buildHours            Int      @default(5500)
+  unveiledAt            String   @default("SEMA Show")
+  engine                String
+  supercharger          String
+  horsepower            Int
+  torqueNm              Int
+  transmission          String
+  chassis               String
+  suspension            String
+  dampers               String
+  brakesFront           String
+  brakesRear            String
+  caliperColor          String   @default("Quantum Cyan")
+  wheelsFront           String
+  wheelsRear            String
+  tiresFront            String
+  tiresRear             String
+  exhaust               String
+  bodyWideningFrontIn   Float    @default(2.0)
+  bodyWideningRearIn    Float    @default(3.5)
+  wheelbaseStretchIn    Float    @default(1.5)
+  carbonFiberParts      String
+  paintName             String   @default("Bootleg Black")
+  paintCode             String   @default("BASF Glasurit GM 8555")
+  curbWeightKg          Float
+  acceleration0100      Float
+  topSpeedKmh           Int
+  estimatedValueUsd     Float
+  imagePath             String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([buildName])
+  @@index([donorYear])
+  @@index([builder])
+}
+

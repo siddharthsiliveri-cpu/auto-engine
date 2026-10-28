@@ -1,6 +1,6 @@
 export interface Role {
   id: string;
-  name: 'ADMIN' | 'PROJECT_MANAGER' | 'ENGINEER' | 'DESIGNER';
+  name: 'ADMIN' | 'PROJECT_MANAGER' | 'ENGINEER' | 'DESIGNER' | 'CUSTOMER';
   description: string;
 }
 
@@ -9,7 +9,7 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  role: 'ADMIN' | 'PROJECT_MANAGER' | 'ENGINEER' | 'DESIGNER';
+  role: 'ADMIN' | 'PROJECT_MANAGER' | 'ENGINEER' | 'DESIGNER' | 'CUSTOMER';
   avatarUrl?: string;
 }
 
@@ -58,6 +58,8 @@ export interface Component {
   name: string;
   description: string;
   manufacturer: string;
+  material?: string;
+  dimensions?: string;
   weightKg: number;
   costUsd: number;
   status: 'APPROVED' | 'IN_REVIEW' | 'PROTOTYPE' | 'DEPRECATED';
@@ -85,6 +87,9 @@ export interface VehicleModel {
   projectId: string;
   modelCode: string;
   name: string;
+  manufacturer?: string;
+  category?: string;
+  imagePath?: string;
   segment: string;
   year: number;
   description: string;
