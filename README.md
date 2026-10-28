@@ -105,14 +105,13 @@ Indexes created on `part_number`, `project_code`, `category_id`, `supplier_id`, 
 
 ## 🔐 Role-Based Access Control (RBAC) & Personas
 
-AUTOENGINE provides a 1-click test persona switcher in the global header for immediate evaluation:
+AUTOENGINE provides a 1-click test persona switcher in the global header for immediate evaluation.
 
 | Role | Test Persona | Privileges & Responsibilities |
-| :--- | :--- | :--- |
+|---|---|---|
 | **`ADMIN`** | **Admin** (Administrator) | Full platform access, database diagnostics, user management, and system overrides. |
-| **`PROJECT_MANAGER`** | **Marcus Thorne** (VP Programs) | Create/manage vehicle programs, milestone scheduling, team assignments, and reviews. |
-| **`ENGINEER`** | **Dr. Sarah Chen** (Lead Powertrain) | Component registry, technical specifications, CAD data, and engineering compliance reviews. |
-| **`DESIGNER`** | **Julian Rossi** (Head of CMF) | 3D studio configurations, exterior coatings, wheel styling, and aesthetic specifications. |
+| **`CUSTOMER`** | **Customer** (Vehicle Customer) | View assigned vehicle programs, track project milestones, explore vehicle configurations, review specifications, and access customer-facing project updates. |
+
 
 ---
 
