@@ -46,71 +46,14 @@ The database layer is normalized to **Third Normal Form (3NF)** and implemented 
 
 ---
 
-### 2. Advanced Relational Constructs:
-
-#### A. Database View (`VehicleComponentView`):
-Unifies 5 relational tables to provide an integrated view of vehicle models, variants, components, categories, and certified suppliers:
-```sql
-CREATE OR REPLACE VIEW "VehicleComponentView" AS
-SELECT 
-    vm.model_code, vm.name AS model_name, vv.variant_code, vv.name AS variant_name,
-    c.part_number, c.name AS component_name, c.weight_kg, c.cost_usd,
-    cc.name AS category_name, s.name AS supplier_name, s.tier_level
-FROM "VehicleModel" vm
-JOIN "VehicleVariant" vv ON vm.id = vv.model_id
-JOIN "VariantComponent" vc ON vv.id = vc.variant_id
-JOIN "Component" c ON vc.component_id = c.id
-JOIN "ComponentCategory" cc ON c.category_id = cc.id
-LEFT JOIN "ComponentSupplier" cs ON c.id = cs.component_id
-LEFT JOIN "Supplier" s ON cs.supplier_id = s.id;
-```
-
-#### B. Stored Procedure (`calculate_project_completion`):
-Computes weighted milestone progress across all engineering milestones and updates `AutomotiveProject.completion_percentage`:
-```sql
-CREATE OR REPLACE FUNCTION calculate_project_completion(p_project_id TEXT)
-RETURNS FLOAT AS $$
-DECLARE
-    v_total_weight FLOAT := 0;
-    v_completed_weight FLOAT := 0;
-    v_completion_pct FLOAT := 0;
-BEGIN
-    SELECT COALESCE(SUM(weight), 0), COALESCE(SUM(CASE WHEN is_completed = true THEN weight ELSE 0 END), 0)
-    INTO v_total_weight, v_completed_weight
-    FROM "ProjectMilestone" WHERE project_id = p_project_id;
-
-    IF v_total_weight > 0 THEN
-        v_completion_pct := ROUND(((v_completed_weight / v_total_weight) * 100)::numeric, 1);
-    ELSE
-        v_completion_pct := 0;
-    END IF;
-
-    UPDATE "AutomotiveProject"
-    SET completion_percentage = v_completion_pct, updated_at = NOW()
-    WHERE id = p_project_id;
-
-    RETURN v_completion_pct;
-END;
-$$ LANGUAGE plpgsql;
-```
-
-#### C. Database Triggers:
+Database Triggers:
 1. `update_project_timestamp`: Updates `updated_at` whenever an `AutomotiveProject` record is modified.
 2. `audit_milestone_update`: Fires on milestone state modification, inserting an audit snapshot into `AuditLog`.
 
-#### D. Performance B-Tree Indexes:
+Performance B-Tree Indexes:
 Indexes created on `part_number`, `project_code`, `category_id`, `supplier_id`, `variant_id`, and `status`.
 
 ---
-
-## 🔐 Role-Based Access Control (RBAC) & Personas
-
-AUTOENGINE provides a 1-click test persona switcher in the global header for immediate evaluation.
-
-| Role | Test Persona | Privileges & Responsibilities |
-|---|---|---|
-| **`ADMIN`** | **Admin** (Administrator) | Full platform access, database diagnostics, user management, and system overrides. |
-| **`CUSTOMER`** | **Customer** (Vehicle Customer) | View assigned vehicle programs, track project milestones, explore vehicle configurations, review specifications, and access customer-facing project updates. |
 
 
 ---
