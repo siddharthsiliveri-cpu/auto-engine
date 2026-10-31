@@ -128,6 +128,4 @@ docker-compose up --build -d
 ## 📄 License
 VIT License • Engineered for the Future of Mobility.
 =======
-# auto-engine
-auto engine
->>>>>>> 37dc1e0c8e4836cded351b5db4f3f7d0ee201882
+
