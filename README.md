@@ -170,7 +170,7 @@ docker-compose up --build -d
 ---
 
 ## 📄 License
-MIT License • Engineered for the Future of Mobility.
+VIT License • Engineered for the Future of Mobility.
 =======
 # auto-engine
 auto engine
