@@ -14,6 +14,23 @@
 * Glassmorphism UI – Backdrop-blur header, minimal desktop cursor, and spring-physics magnetic buttons (@/components/core/magnetic)
 
 ---
+## Monorepo Architecture
+
+```
+├── apps/
+│   ├── frontend/        React + TypeScript + Tailwind (3D scroller, exploded view, configurator, digital twin UI)
+│   └── backend/         Node.js + Express API (routes, services, repositories)
+├── packages/
+│   ├── ui/              Shared UI components (glassmorphism header, magnetic buttons, custom cursor)
+│   ├── 3d-engine/       Three.js + React Three Fiber scenes, camera paths, X-ray materials, raycasting pins
+│   └── core/            Shared types, constants, and vehicle calculation utilities
+├── prisma/              Prisma schema, migrations, and seed data (PostgreSQL, SQLite for local dev)
+├── docs/                Project documentation and architecture notes
+└── scripts/             Build automation and dev tools
+```
+ ---
+
+The frontend deploys to Vercel and the backend to Render or Railway, with PostgreSQL hosted on Supabase (or Railway). The backend follows a layered architecture: routes handle HTTP, services hold business logic such as compatibility checks and pricing, and repositories talk to the database through Prisma.
 
 ## 🏛️ BCSE307L Database Systems Architecture
 
