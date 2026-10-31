@@ -5,17 +5,13 @@
 
 ---
 
-## 🏎️ Executive Overview
-
-**AUTOENGINE** redefines automotive digital engineering. Designed with the precision of **Apple**, the engineering ethos of **Tesla & Rivian**, the track pedigree of **Porsche**, and the interaction fluidity of **Linear & Vercel**, AUTOENGINE provides automotive manufacturers, chief engineers, and vehicle program directors with a unified operating system for next-generation vehicle programs.
-
-### Visual & Interactive Signature:
-- **Minimal, Cinematic Palette**: Obsidian Near-Black (`#050505`), Deep Charcoal (`#0B0B0B`), and Electric Cyan (`#00F0FF`).
-- **6-Stage Pinned 3D Scroller**: Pinned WebGL viewport driving camera positions, component separations, and X-ray material transitions from exterior silhouette down to high-voltage silicon-carbide inverters.
-- **Interactive Exploded View Engine**: Decouple vehicle sub-assemblies (Aerodynamic Body Shell, Ergonomic Cockpit, 800V Skateboard Battery, Dual Axial-Flux Motors, Bilstein Suspension, Brembo Brakes, and Forged Aero Wheels) with live millimeter slider controls and 3D Raycasting inspection pins.
-- **Vehicle Configurator Studio**: Real-time 3D vehicle customization with instant mathematical calculation of curb weight, drag coefficient, 0–100 km/h acceleration, electric range, and MSRP, persisted directly to PostgreSQL via multi-table ACID transactions.
-- **Hardware-in-the-Loop Digital Twin**: Real-time CAN-bus simulated sensor streams tracking battery cell voltages, motor thermals, aerodynamic downforce, and dynamic torque split with diagnostic health check execution.
-- **Floating Glassmorphism UI**: Backdrop blur header, desktop minimal cursor, and spring-physics magnetic buttons (`@/components/core/magnetic`).
+## Highlights
+* Cinematic design – Obsidian Near-Black (#050505), Deep Charcoal (#0B0B0B), and Electric Cyan (#00F0FF) palette
+* Pinned 3D scroller – Six-stage WebGL viewport driving camera moves, component separation, and X-ray transitions down to the silicon-carbide inverters
+* Exploded view engine – Body shell, cockpit, 800V skateboard battery, dual axial-flux motors, Bilstein suspension, Brembo brakes, and forged aero wheels, with live millimeter sliders and raycasting inspection pins
+* Vehicle configurator – Real-time 3D customization with instant curb weight, drag, 0–100 km/h, range, and MSRP calculations, persisted to PostgreSQL via multi-table ACID transactions
+* Digital twin – Hardware-in-the-loop CAN-bus sensor streams for cell voltages, motor thermals, aero downforce, and torque split, with diagnostic health checks
+* Glassmorphism UI – Backdrop-blur header, minimal desktop cursor, and spring-physics magnetic buttons (@/components/core/magnetic)
 
 ---
 
